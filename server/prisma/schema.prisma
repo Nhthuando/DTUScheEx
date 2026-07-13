@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =====================
+// ENUM
+// =====================
+enum ScrapeStatus {
+  SUCCESS
+  FAILED
+}
+
+// =====================
+// MODELS
+// =====================
+
+/// Tài khoản sinh viên
+model User {
+  id        String   @id @default(uuid())
+  studentId String   @unique
+  email     String   @unique
+  password  String
+  fullName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+/// Đợt thi — mỗi link detail trên web trường = 1 record
+model ExamPeriod {
+  id        String   @id @default(uuid())
+  name      String // "Thi lần 1 - HK2 năm học 2025-2026"
+  sourceUrl String   @unique // URL detail page, tránh cào trùng
+  scrapedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  schedules ExamSchedule[]
+
+  @@map("exam_periods")
+}
+
+/// Phòng thi — 1 record = 1 phòng thi cụ thể
+model ExamSchedule {
+  id           String     @id @default(uuid())
+  examPeriodId String
+  examPeriod   ExamPeriod @relation(fields: [examPeriodId], references: [id], onDelete: Cascade)
+
+  courseCode String // Mã môn — "MED 705"
+  courseName String // Tên môn — "Pháp Y"
+  group      String? // Nhóm lớp — "SA SC"
+  examDate   DateTime // Ngày thi
+  startTime  String // "13h30"
+  endTime    String? // "15h00" (nếu có)
+  room       String // Phòng thi — "Nhà E- 204"
+  location   String? // Cơ sở — "Hòa Khánh Nam"
+  examAttempt Int      @default(1) // Lần thi (1, 2...)
+  semester   String? // "HÈ(2025-2026)"
+  credits    Int? // Số tín chỉ
+
+  students  ExamStudent[]
+  createdAt DateTime @default(now())
+
+  @@index([courseCode]) // Index cho query nhanh theo mã môn
+  @@unique([examPeriodId, courseCode, group, room, examDate]) // Tránh trùng khi cào lại
+  @@map("exam_schedules")
+}
+
+/// Sinh viên trong phòng thi — 1 record = 1 SV được xếp vào 1 phòng
+model ExamStudent {
+  id             String       @id @default(uuid())
+  examScheduleId String
+  examSchedule   ExamSchedule @relation(fields: [examScheduleId], references: [id], onDelete: Cascade)
+
+  studentId   String // Mã SV — "26205339251"
+  lastName    String // Họ và tên đệm — "Trương Thùy"
+  firstName   String // Tên — "An"
+  classCode   String? // Lớp SH — "K26YDK"
+  note        String? // Ghi chú — "Nợ HP"
+
+  createdAt DateTime @default(now())
+
+  @@index([studentId]) // Index chính — query theo mã SV
+  @@unique([examScheduleId, studentId]) // 1 SV chỉ xuất hiện 1 lần trong 1 phòng
+  @@map("exam_students")
+}
+
+/// Log mỗi lần cào dữ liệu
+model ScrapeLog {
+  id           String       @id @default(uuid())
+  status       ScrapeStatus
+  totalRecords Int          @default(0)
+  errorMessage String?
+  startedAt    DateTime     @default(now())
+  finishedAt   DateTime?
+
+  @@map("scrape_logs")
+}
