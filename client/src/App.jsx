@@ -24,7 +24,7 @@ const App = () => {
 
     try {
       // 1. findCourse
-      const res1 = await fetch('http://localhost:5000/api/exams/findCourse', {
+      const res1 = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/exams/findCourse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ maMonHoc }),
@@ -36,7 +36,7 @@ const App = () => {
 
       // 2. getExamSchedule
       setLoadingMessage('Đang đồng bộ dữ liệu phòng thi...');
-      const res2 = await fetch('http://localhost:5000/api/exams/getExamSchedule', {
+      const res2 = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/exams/getExamSchedule`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sourceUrl: data1.sourceUrl }),
@@ -48,7 +48,7 @@ const App = () => {
 
       // 3. findExamSchedule
       setLoadingMessage('Đang tra cứu thông tin sinh viên...');
-      const res3 = await fetch('http://localhost:5000/api/exams/findExamSchedule', {
+      const res3 = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/exams/findExamSchedule`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ maMonHoc, maSinhVien }),

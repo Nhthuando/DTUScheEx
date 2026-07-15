@@ -16,7 +16,7 @@ const RoomsList = () => {
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5000/api/exams/allSche');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/exams/allSche`);
       const data = await res.json();
       if (res.ok) {
         setRooms(data.data);
@@ -33,7 +33,7 @@ const RoomsList = () => {
   const handleSync = async () => {
     try {
       setIsSyncing(true);
-      const res = await fetch('http://localhost:5000/api/exams/scrape');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/exams/scrape`);
       const data = await res.json();
       if (res.ok) {
         await fetchRooms();
