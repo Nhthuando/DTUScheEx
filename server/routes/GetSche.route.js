@@ -1,9 +1,8 @@
 import express from "express";
-import { scrapeCourse, findCourse, findExamSche, getExamSche } from "../controllers/GetSche.controller.js"
+import { scrapeCourse, findCourse, findExamSche, getExamSche, getAllSche } from "../controllers/GetSche.controller.js"
 
 const router = express.Router();
 
-// GET — trigger cào thủ công (không cần body)
 router.get("/scrape", async (req, res) => {
     try {
         const result = await scrapeCourse();
@@ -14,9 +13,9 @@ router.get("/scrape", async (req, res) => {
     }
 });
 
-// POST — các endpoint nhận body
 router.post("/findCourse", findCourse);
 router.post("/getExamSchedule", getExamSche);
 router.post("/findExamSchedule", findExamSche);
+router.get("/allSche", getAllSche);
 
 export default router;
