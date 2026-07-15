@@ -20,6 +20,10 @@ app.use(
     }),
 );
 
+app.get("/", (req, res) => {
+    res.status(200).send("Server is awake and running!");
+});
+
 app.use("/api/exams", getScheRoute);
 
 app.listen(PORT, () => {
