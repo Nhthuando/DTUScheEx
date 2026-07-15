@@ -10,6 +10,16 @@ app.use(cors());
 app.use(express.json());
 const PORT = (process.env.PORT || 5000);
 
+app.use(
+    cors({
+        origin: [
+            process.env.CLIENT_URL || "http://localhost:5173",
+            "http://localhost:5174",
+        ],
+        credentials: true,
+    }),
+);
+
 app.use("/api/exams", getScheRoute);
 
 app.listen(PORT, () => {
